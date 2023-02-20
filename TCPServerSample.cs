@@ -52,6 +52,7 @@ class TCPServerSample
 	{
 		//Second big change, instead of blocking on one client, 
 		//we now process all clients IF they have data available
+		//Foreach room
 		foreach (Client client in clients)
 		{
 			if (client.tcpClient.Available == 0) continue;
