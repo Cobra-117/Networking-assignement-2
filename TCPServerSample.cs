@@ -56,24 +56,27 @@ class TCPServerSample
 		//Second big change, instead of blocking on one client, 
 		//we now process all clients IF they have data available
 		//Foreach room
-		foreach (Room room in rooms)
+		//foreach (Room room in rooms)
+		for (int i = 0; i < rooms.Count; i++)
 		{
-			foreach (Client client in room.clients)
+			Room room = rooms[i];
+			//foreach (Client client in room.clients)
+			for (int j = 0; j < room.clients.Count; j++)
 			{
-				if (client.tcpClient.Available == 0) continue;
-				NetworkStream stream = client.tcpClient.GetStream();
+				if (room.clients[j].tcpClient.Available == 0) continue;
+				NetworkStream stream = room.clients[j].tcpClient.GetStream();
 				byte[] message = StreamUtil.Read(stream);
 				string asciiMessage = System.Text.Encoding.ASCII.GetString(message);
 				string output;
 				//StreamUtil.Write(stream, StreamUtil.Read(stream));
 				Console.WriteLine("got data");
 				if (asciiMessage != null && asciiMessage[0] == '/')
-					Commands.ManageCommands(client, asciiMessage, room);
+					Commands.ManageCommands(room.clients[j], asciiMessage, room);
 				else
 				{
-					ServerUtilities.NotifyClient(client, "You: " + asciiMessage);
-					ServerUtilities.NotifyOtherClients(room.clients,
-						client, client.pseudo + ": " + asciiMessage);
+					ServerUtilities.NotifyClient(room.clients[j], "You: " + asciiMessage);
+					room.clients = ServerUtilities.NotifyOtherClients(room.clients,
+						room.clients[j], room.clients[j].pseudo + ": " + asciiMessage);
 				}
 			}
 		}

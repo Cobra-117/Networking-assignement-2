@@ -14,7 +14,7 @@ class ServerUtilities
 		StreamUtil.Write(stream, System.Text.Encoding.ASCII.GetBytes(message));
 	}
 
-	public static void NotifyOtherClients(List<Client> clientsList, Client CurrentClient, string message)
+	public static List<Client> NotifyOtherClients(List<Client> clientsList, Client CurrentClient, string message)
 	{
 		int i = 0;
 		try
@@ -31,10 +31,12 @@ class ServerUtilities
 		catch
         {
 			Console.WriteLine("Unexisting client");
+			clientsList.RemoveAt(i);
 			//TCPServerSample.clients.RemoveAt(i);
 			//To fix ASAP
 
 		}
+		return clientsList;
 	}
 
 	public static bool IsNameTaken(List<Client> clientsList, string TestedName)

@@ -30,6 +30,10 @@ class Commands
 			ListCommand(client);
 		else if (command[0] == "/listroom")
 			ListRoomCommand(client, room);
+		else if (command[0] == "/listrooms")
+			ListRoomsCommand(client);
+		else if (command[0] == "/joinroom")
+			JoinRoomCommand(client, command);
 		else if (command[0] == "/whisper" || command[0] == "/w")
 			WhisperCommand(client, command);
 		return client;
@@ -74,6 +78,15 @@ class Commands
 		}
 	}
 
+	public static void ListRoomsCommand(Client client)
+	{
+		ServerUtilities.NotifyClient(client, "Available rooms:");
+		foreach (Room room in TCPServerSample.rooms)
+		{
+			ServerUtilities.NotifyClient(client, room.name);
+		}
+	}
+
 	public static void WhisperCommand(Client client, string[] command)
 	{
 		Client target;
@@ -106,13 +119,27 @@ class Commands
 
 	public static void JoinRoomCommand(Client client, string[] command)
     {
+		//Room Newroom;
 		if (command.GetLongLength(0) < 2)
 		{
 			ServerUtilities.NotifyClient(client, "Usage: /whisper <nickname> <message>");
 			return;
 		}
-		/*foreach (Room room in TCPServerSample.rooms)
-			foreach (Client otherClient in room.clients)*/
+		if (!RoomManagement.DoesRoomExist(command[1]))
+			RoomManagement.CreateRoom(command[1]);
+		foreach (Room room in TCPServerSample.rooms)
+		{
+			foreach (Client otherClient in room.clients)
+			{
+				if (otherClient == client)
+                {
+					RoomManagement.MoveClient(client, command[1]);
+					Console.WriteLine("Moved client " + client.pseudo +
+						"to " + command[1]);
+					break;
+                }
+			}
+		}
 
 	}
 
