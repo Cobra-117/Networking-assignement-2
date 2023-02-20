@@ -50,5 +50,6 @@ class RoomManagement
             }
         }
         newRoom.clients.Add(client);
+        ServerUtilities.NotifyOtherClients(newRoom.clients, client, client.pseudo + " joined the room");
     }
 }

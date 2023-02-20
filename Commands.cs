@@ -25,7 +25,7 @@ class Commands
 			"/list: display the list of all connected clients\n" +
 			"/listroom: display the list of clients in the room\n" +
 			"/listrooms: display the list of existing rooms\n" +
-			"/joinroom <room name>: join a room\n" +
+			"/join <room name>: join a room\n" +
 			"/help: display help\n" +
 			"/whisper, /w <nickname> <message> : whisper privately");
 		}
@@ -35,7 +35,7 @@ class Commands
 			ListRoomCommand(client, room);
 		else if (command[0] == "/listrooms")
 			ListRoomsCommand(client);
-		else if (command[0] == "/joinroom")
+		else if (command[0] == "/join")
 			JoinRoomCommand(client, command);
 		else if (command[0] == "/whisper" || command[0] == "/w")
 			WhisperCommand(client, command);
@@ -127,7 +127,7 @@ class Commands
 		//Room Newroom;
 		if (command.GetLongLength(0) < 2)
 		{
-			ServerUtilities.NotifyClient(client, "Usage: /joinroom <roomname>");
+			ServerUtilities.NotifyClient(client, "Usage: /join <roomname>");
 			return;
 		}
 		
@@ -145,7 +145,7 @@ class Commands
 					RoomManagement.MoveClient(client, command[1]);
 					Console.WriteLine("Moved client " + client.pseudo +
 						"to " + command[1]);
-					break;
+					return;
                 }
 			}
 		}

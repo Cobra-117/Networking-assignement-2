@@ -21,7 +21,7 @@ class TCPServerSample
 		//List<TcpClient> clients = new List<TcpClient>();
 		//clients = new List<Client>();
 		rooms = new List<Room>();
-		rooms.Add(new Room("Main"));
+		rooms.Add(new Room("general"));
 
 		while (true)
 		{
