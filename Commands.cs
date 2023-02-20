@@ -22,7 +22,10 @@ class Commands
 		{
 			ServerUtilities.NotifyClient(client, "Command list:\n" +
 			"/setname, /sn <nickname>: change nickname\n" +
-			"/list: display the list of connected clients\n" +
+			"/list: display the list of all connected clients\n" +
+			"/listroom: display the list of clients in the room\n" +
+			"/listrooms: display the list of existing rooms\n" +
+			"/joinroom <room name>: join a room\n" +
 			"/help: display help\n" +
 			"/whisper, /w <nickname> <message> : whisper privately");
 		}
@@ -36,6 +39,8 @@ class Commands
 			JoinRoomCommand(client, command);
 		else if (command[0] == "/whisper" || command[0] == "/w")
 			WhisperCommand(client, command);
+		else
+			ServerUtilities.NotifyClient(client, "Unknown command");
 		return client;
 	}
 
@@ -122,9 +127,11 @@ class Commands
 		//Room Newroom;
 		if (command.GetLongLength(0) < 2)
 		{
-			ServerUtilities.NotifyClient(client, "Usage: /whisper <nickname> <message>");
+			ServerUtilities.NotifyClient(client, "Usage: /joinroom <roomname>");
 			return;
 		}
+		
+		
 		if (!RoomManagement.DoesRoomExist(command[1]))
 			RoomManagement.CreateRoom(command[1]);
 		foreach (Room room in TCPServerSample.rooms)
@@ -133,6 +140,8 @@ class Commands
 			{
 				if (otherClient == client)
                 {
+					ServerUtilities.NotifyClient(client, "You joined room " + command[1]);
+					ServerUtilities.NotifyOtherClients(room.clients , client, client.pseudo + " left the room");
 					RoomManagement.MoveClient(client, command[1]);
 					Console.WriteLine("Moved client " + client.pseudo +
 						"to " + command[1]);
