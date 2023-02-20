@@ -9,14 +9,14 @@ using System.Threading;
 
 class Commands
 {
-	public static Client ManageCommands(Client client, string message)
+	public static Client ManageCommands(Client client, string message, Room room)
 	{
 		string[] command = message.Split(' ');
 		if (command.GetLongLength(0) == 0)
 			return client;
 		if (command[0] == "/setname" || command[0] == "/sn")
 		{
-			client = SetNameCommand(client, command);
+			client = SetNameCommand(client, command, room);
 		}
 		else if (command[0] == "/help")
 		{
@@ -33,17 +33,17 @@ class Commands
 		return client;
 	}
 
-	public static Client SetNameCommand(Client client, string[] command)
+	public static Client SetNameCommand(Client client, string[] command, Room room)
     {
 		if (command.GetLongLength(0) < 2)
 			ServerUtilities.NotifyClient(client, "You can't set an empty name");
 
-		else if (ServerUtilities.IsNameTaken(TCPServerSample.clients, command[1].ToLower()))
+		else if (ServerUtilities.IsNameTaken(room.clients, command[1].ToLower()))
 			ServerUtilities.NotifyClient(client, "This nickname is already taken");
 		else
 		{
 			ServerUtilities.NotifyClient(client, "Named changed to " + command[1].ToLower());
-			ServerUtilities.NotifyOtherClients(TCPServerSample.clients,
+			ServerUtilities.NotifyOtherClients(room.clients,
 				client, "Client " + client.pseudo +
 				" changed the nickname to " + command[1].ToLower());
 			client.pseudo = command[1].ToLower();
@@ -53,16 +53,16 @@ class Commands
 
 	public static void ListCommand(Client client)
     {
-		ServerUtilities.NotifyClient(client, "Connected clients:");
+		/*ServerUtilities.NotifyClient(client, "Connected clients:");
 		foreach (Client otherClient in TCPServerSample.clients)
         {
 			ServerUtilities.NotifyClient(client, otherClient.pseudo);
-        }
+        }*/
     }
 
 	public static void WhisperCommand(Client client, string[] command)
 	{
-		Client target;
+		/*Client target;
 		string message = "";
 		if (command.GetLongLength(0) < 2)
 		{
@@ -85,7 +85,7 @@ class Commands
 				return;
             }
 		}
-		ServerUtilities.NotifyClient(client, "Target " + command[1] + " does not exist");
+		ServerUtilities.NotifyClient(client, "Target " + command[1] + " does not exist");*/
 	}
 
 }

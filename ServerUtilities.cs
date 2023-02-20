@@ -19,7 +19,7 @@ class ServerUtilities
 		int i = 0;
 		try
 		{
-			foreach (Client otherClient in TCPServerSample.clients)
+			foreach (Client otherClient in clientsList)
 			{
 				if (otherClient == CurrentClient)
 					continue;
@@ -31,7 +31,8 @@ class ServerUtilities
 		catch
         {
 			Console.WriteLine("Unexisting client");
-			TCPServerSample.clients.RemoveAt(i);
+			//TCPServerSample.clients.RemoveAt(i);
+			//To fix ASAP
 
 		}
 	}

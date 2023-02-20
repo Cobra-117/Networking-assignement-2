@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 class Room
 {
-    public static List<Client> clients;
+    public List<Client> clients;
 
     public string name;
+
+    public Room(string roomName)
+    {
+        name = roomName;
+        clients = new List<Client>();
+    }
 }
 

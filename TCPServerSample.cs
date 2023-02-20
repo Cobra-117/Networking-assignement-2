@@ -8,7 +8,8 @@ using System.Threading;
 class TCPServerSample
 {
 	public static TcpListener listener;
-	public static List<Client> clients;
+	//public static List<Client> clients;
+	public static List<Room> rooms;
 
 	public static void Main(string[] args)
 	{
@@ -18,7 +19,9 @@ class TCPServerSample
 		listener.Start();
 
 		//List<TcpClient> clients = new List<TcpClient>();
-		clients = new List<Client>();
+		//clients = new List<Client>();
+		rooms = new List<Room>();
+		rooms.Add(new Room("Main"));
 
 		while (true)
 		{
@@ -40,11 +43,11 @@ class TCPServerSample
 		while (listener.Pending())
 		{
 			// newclientTcp = listener.AcceptTcpClient();
-			Client newclient = new Client(listener.AcceptTcpClient(), clients.Count);
-			clients.Add(newclient);
+			Client newclient = new Client(listener.AcceptTcpClient(), rooms[0].clients.Count);
+			rooms[0].clients.Add(newclient);
 			Console.WriteLine("Accepted new client.");
 			ServerUtilities.NotifyClient(newclient, "You joined the chat as " + newclient.pseudo);
-			ServerUtilities.NotifyOtherClients(clients, newclient, newclient.pseudo + " joined the chat");
+			ServerUtilities.NotifyOtherClients(rooms[0].clients, newclient, newclient.pseudo + " joined the chat");
 		}
 	}
 
@@ -53,23 +56,26 @@ class TCPServerSample
 		//Second big change, instead of blocking on one client, 
 		//we now process all clients IF they have data available
 		//Foreach room
-		foreach (Client client in clients)
+		foreach (Room room in rooms)
 		{
-			if (client.tcpClient.Available == 0) continue;
-			NetworkStream stream = client.tcpClient.GetStream();
-			byte[] message = StreamUtil.Read(stream);
-			string asciiMessage = System.Text.Encoding.ASCII.GetString(message);
-			string output;
-			//StreamUtil.Write(stream, StreamUtil.Read(stream));
-			Console.WriteLine("got data");
-			if (asciiMessage != null && asciiMessage[0] == '/')
-				Commands.ManageCommands(client, asciiMessage);
-			else
-            {
-				ServerUtilities.NotifyClient(client, "You: " + asciiMessage);
-				ServerUtilities.NotifyOtherClients(clients,
-					client, client.pseudo + ": " + asciiMessage);
-            }
+			foreach (Client client in room.clients)
+			{
+				if (client.tcpClient.Available == 0) continue;
+				NetworkStream stream = client.tcpClient.GetStream();
+				byte[] message = StreamUtil.Read(stream);
+				string asciiMessage = System.Text.Encoding.ASCII.GetString(message);
+				string output;
+				//StreamUtil.Write(stream, StreamUtil.Read(stream));
+				Console.WriteLine("got data");
+				if (asciiMessage != null && asciiMessage[0] == '/')
+					Commands.ManageCommands(client, asciiMessage, room);
+				else
+				{
+					ServerUtilities.NotifyClient(client, "You: " + asciiMessage);
+					ServerUtilities.NotifyOtherClients(room.clients,
+						client, client.pseudo + ": " + asciiMessage);
+				}
+			}
 		}
 	}
 }
